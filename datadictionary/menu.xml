@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <menu id="template" description="Vinculo Frete x Venda" icon="/$ctx/assets/icon.png">
+        <ui id="FreteVendaVinculoPOC" url="/$ctx/FreteVendaVinculoPOC.xhtml5" description="POC - Vinculo Frete x Venda"/>
+    </menu>
+</metadados>

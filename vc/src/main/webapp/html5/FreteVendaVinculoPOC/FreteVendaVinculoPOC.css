@@ -1,0 +1,19 @@
+.fv-poc { max-width: 960px; margin: 24px auto; padding: 24px; color: #243447; font-family: Arial, sans-serif; background: #fff; }
+.fv-poc__header, .fv-poc__footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.fv-poc h1 { margin: 0 0 6px; font-size: 24px; }
+.fv-poc h2 { margin-top: 28px; font-size: 18px; }
+.fv-poc p { margin: 0; color: #637083; }
+.fv-poc__badge { padding: 5px 10px; border-radius: 12px; background: #fff1cc; color: #805b00; font-size: 12px; font-weight: bold; }
+.fv-poc__notice { margin: 22px 0; padding: 12px 14px; border-left: 4px solid #d79b00; background: #fff8e6; }
+.fv-poc__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.fv-poc label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #637083; }
+.fv-poc input { padding: 9px; border: 1px solid #d8dee8; border-radius: 4px; color: #243447; background: #f7f9fb; }
+.fv-poc table { width: 100%; border-collapse: collapse; }
+.fv-poc th, .fv-poc td { padding: 10px; border-bottom: 1px solid #e7ebf0; text-align: left; }
+.fv-poc th { cursor: pointer; user-select: none; }
+.fv-poc__empty { padding: 18px; color: #637083; background: #f7f9fb; }
+.fv-poc__allocation { display: flex; gap: 24px; margin-top: 14px; padding: 12px; background: #f7f9fb; }
+.fv-poc__allocation { display: flex; gap: 24px; margin-top: 14px; padding: 12px; background: #f7f9fb; }
+.fv-poc__footer { margin-top: 28px; justify-content: flex-end; }
+.fv-poc button { padding: 9px 14px; border: 1px solid #b9c2cf; border-radius: 4px; background: #fff; cursor: pointer; }
+.fv-poc button.primary { border-color: #8fa9c8; background: #dbe8f7; }

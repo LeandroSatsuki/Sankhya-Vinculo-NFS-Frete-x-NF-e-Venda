@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <table name="TFV_CTE_NFE" sequenceType="M">
+        <description>Índice de CTEs por NFe</description>
+        <primaryKey>
+            <field name="TFV_CHAVE_NFE" />
+        </primaryKey>
+        <instances>
+            <instance name="TFV_CTE_NFE">
+                <description>Índice de CTEs por NFe</description>
+            </instance>
+        </instances>
+        <fields>
+            <field name="TFV_CHAVE_NFE" dataType="TEXTO" size="44" required="true"><description>Chave de acesso da NFe</description></field>
+            <field name="TFV_CHAVE_CTE" dataType="TEXTO" size="44"><description>Chave de acesso do CTE</description></field>
+            <field name="TFV_VALOR_CTE" dataType="DECIMAL" required="true"><description>Valor do CTE</description></field>
+            <field name="TFV_DT_EMISSAO" dataType="DATA"><description>Data de emissão do CTE</description></field>
+            <field name="TFV_STATUS" dataType="TEXTO" size="20"><description>Situação do CTE</description></field>
+        </fields>
+    </table>
+</metadados>

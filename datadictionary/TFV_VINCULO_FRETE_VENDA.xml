@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <table name="TFV_VINCULO_FRETE_VENDA" sequenceType="M">
+        <description>Vínculo entre nota de frete e venda</description>
+        <primaryKey>
+            <field name="TFV_NUNOTA_FRETE" />
+            <field name="TFV_NUNOTA_VENDA" />
+        </primaryKey>
+        <instances>
+            <instance name="TFV_VINCULO_FRETE_VENDA">
+                <description>Vínculo frete x venda</description>
+            </instance>
+        </instances>
+        <fields>
+            <field name="TFV_NUNOTA_FRETE" dataType="INTEIRO" required="true"><description>Número único da nota de frete</description></field>
+            <field name="TFV_NUNOTA_VENDA" dataType="INTEIRO" required="true"><description>Número único da nota de venda</description></field>
+            <field name="TFV_VLR_RATEIO" dataType="DECIMAL" required="true"><description>Valor do frete alocado</description></field>
+            <field name="TFV_PERCENTUAL" dataType="DECIMAL" required="true"><description>Percentual do peso alocado</description></field>
+            <field name="TFV_ATIVO" dataType="CHECKBOX" required="true" default="S"><description>Vínculo ativo</description></field>
+            <field name="TFV_ORIGEM" dataType="TEXTO" size="20" required="true"><description>Origem do vínculo</description></field>
+            <field name="TFV_OBSERVACAO" dataType="TEXTO" size="1000"><description>Observação do vínculo</description></field>
+        </fields>
+    </table>
+</metadados>
