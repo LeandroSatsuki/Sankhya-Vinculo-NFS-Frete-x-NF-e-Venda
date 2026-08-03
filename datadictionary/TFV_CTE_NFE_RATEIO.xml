@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <table name="TFV_CTE_NFE_RATEIO" sequenceType="M">
+        <description>Rateio do CTE entre NFes</description>
+        <primaryKey><field name="TFV_CHAVE_CTE" /><field name="TFV_CHAVE_NFE" /></primaryKey>
+        <instances><instance name="TFV_CTE_NFE_RATEIO"><description>Rateio do CTE entre NFes</description></instance></instances>
+        <fields>
+            <field name="TFV_CHAVE_CTE" dataType="TEXTO" size="44" required="true"><description>Chave de acesso do CTE</description></field>
+            <field name="TFV_CHAVE_NFE" dataType="TEXTO" size="44" required="true"><description>Chave de acesso da NFe</description></field>
+            <field name="TFV_PESO_NFE" dataType="DECIMAL"><description>Peso bruto da NFe</description></field>
+            <field name="TFV_PESO_TOTAL" dataType="DECIMAL"><description>Peso total das NFes do CTE</description></field>
+            <field name="TFV_VALOR_RATEADO" dataType="DECIMAL" required="true"><description>Valor do CTE rateado</description></field>
+        </fields>
+    </table>
+</metadados>

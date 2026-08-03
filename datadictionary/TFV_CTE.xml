@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <table name="TFV_CTE" sequenceType="M">
+        <description>CTE com valor total</description>
+        <primaryKey><field name="TFV_CHAVE_CTE" /></primaryKey>
+        <instances><instance name="TFV_CTE"><description>CTE com valor total</description></instance></instances>
+        <fields>
+            <field name="TFV_CHAVE_CTE" dataType="TEXTO" size="44" required="true"><description>Chave de acesso do CTE</description></field>
+            <field name="TFV_VALOR_TOTAL" dataType="DECIMAL" required="true"><description>Valor total do CTE</description></field>
+            <field name="TFV_DT_EMISSAO" dataType="DATA"><description>Data de emissão do CTE</description></field>
+            <field name="TFV_STATUS" dataType="TEXTO" size="20"><description>Situação do CTE</description></field>
+        </fields>
+    </table>
+</metadados>

@@ -7,6 +7,12 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
         self.settledInstallments = 'Não consultado';
         self.links = [];
         self.availableSales = [];
+        self.noteFilterInitial = '';
+        self.noteFilterFinal = '';
+        self.noteFilterAppliedInitial = '';
+        self.noteFilterAppliedFinal = '';
+        self.salesPage = 0;
+        self.salesPageSize = 50;
         self.selectedSales = [];
         self.selectionConfirmed = false;
         self.freightTotal = 0;
@@ -19,7 +25,9 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
         self.saveError = '';
         self.saved = false;
 
-        function loadRecords(rootEntity, fields, expression, parameters) {
+        function loadRecords(rootEntity, fields, expression, parameters, offsetPage, accumulated) {
+            offsetPage = offsetPage || 0;
+            accumulated = accumulated || [];
             var criteria = {
                 expression: { '$': expression === undefined ? '(this.NUNOTA = ?)' : expression }
             };
@@ -31,7 +39,9 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
                     dataSet: {
                         rootEntity: rootEntity,
                         includePresentationFields: 'N',
-                        offsetPage: '0',
+                offsetPage: String(offsetPage),
+                useFileBasedPagination: 'true',
+                orderByExpression: fields[0] + ' ASC',
                         criteria: criteria,
                         entity: { fieldset: { list: fields.join(',') } }
                     }
@@ -39,11 +49,68 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
             };
             return $http.post('/mge/service.sbr?serviceName=CRUDServiceProvider.loadRecords&outputType=json', body)
                 .then(function (response) {
-                    var entities = response.data && response.data.responseBody && response.data.responseBody.entities;
-                    if (!entities || !entities.entity) return [];
-                    return angular.isArray(entities.entity) ? entities.entity : [entities.entity];
+                    var responseBody = response.data && response.data.responseBody;
+                    var entities = responseBody && responseBody.entities;
+                    var page = (!entities || !entities.entity) ? [] : (angular.isArray(entities.entity) ? entities.entity : [entities.entity]);
+                    accumulated = accumulated.concat(page);
+                    var hasMoreValue = responseBody && responseBody.hasMoreResult !== undefined ? responseBody.hasMoreResult : (response.data && response.data.hasMoreResult);
+                    var hasMore = hasMoreValue === true || hasMoreValue === 'true' || hasMoreValue === 'S' || page.length >= 50;
+                    return hasMore ? loadRecords(rootEntity, fields, expression, parameters, offsetPage + 1, accumulated) : accumulated;
                 });
         }
+
+        self.noteMatches = function (sale) {
+            var number = Number(sale && sale.numNota);
+            if (isNaN(number)) return false;
+            var initial = self.noteFilterAppliedInitial === '' ? null : Number(self.noteFilterAppliedInitial);
+            var final = self.noteFilterAppliedFinal === '' ? null : Number(self.noteFilterAppliedFinal);
+            if (initial !== null && !isNaN(initial) && number < initial) return false;
+            if (final !== null && !isNaN(final) && number > final) return false;
+            return true;
+        };
+        self.applyNoteFilter = function () {
+            self.noteFilterAppliedInitial = self.noteFilterInitial;
+            self.noteFilterAppliedFinal = self.noteFilterFinal;
+            self.salesPage = 0;
+        };
+        self.clearNoteFilter = function () {
+            self.noteFilterInitial = '';
+            self.noteFilterFinal = '';
+            self.noteFilterAppliedInitial = '';
+            self.noteFilterAppliedFinal = '';
+            self.salesPage = 0;
+        };
+        self.filteredSales = function () {
+            return self.availableSales.filter(self.noteMatches);
+        };
+        self.salesPageCount = function () {
+            return Math.max(1, Math.ceil(self.filteredSales().length / self.salesPageSize));
+        };
+        self.previousSalesPage = function () {
+            if (self.salesPage > 0) self.salesPage--;
+        };
+        self.nextSalesPage = function () {
+            if (self.salesPage + 1 < self.salesPageCount()) self.salesPage++;
+        };
+        self.markAllFiltered = function () {
+            self.filteredSales().forEach(function (sale) {
+                sale.selected = true;
+                if (self.selectedSales.indexOf(sale) < 0) self.selectedSales.push(sale);
+            });
+            self.recalculate();
+        };
+        self.unmarkAllFiltered = function () {
+            self.filteredSales().forEach(function (sale) {
+                sale.selected = false;
+                var index = self.selectedSales.indexOf(sale);
+                if (index >= 0) self.selectedSales.splice(index, 1);
+                sale.allocation = '';
+            });
+            self.recalculate();
+        };
+        self.filteredSalesWeight = function () {
+            return self.filteredSales().reduce(function (total, sale) { return total + numeric(sale.weight); }, 0);
+        };
 
         function fieldValue(record, index) {
             if (!record) return null;
@@ -219,13 +286,13 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
                         self.freightTotal = numeric(fieldValue(cab, 1));
                         self.freightValue = money(self.freightTotal);
                         self.accounted = hasValue(fieldValue(cab, 2)) ? fieldValue(cab, 2) : 'Não consultado';
-                        var companyCode = fieldValue(cab, 3), negotiationDate = toDate(fieldValue(cab, 4));
-                        if (!companyCode || !negotiationDate) return [];
-                        var from = new Date(negotiationDate.getTime()), until = new Date(negotiationDate.getTime());
-                        from.setDate(from.getDate() - 60); until.setDate(until.getDate() + 15);
-                        return loadRecords('CabecalhoNota', ['NUNOTA', 'NUMNOTA', 'DTNEG', 'VLRNOTA', 'CODPARC', 'PESOBRUTO'], '(this.CODEMP = ? AND this.TIPMOV = ? AND this.DTNEG BETWEEN ? AND ?)', [
-                            { '$': String(companyCode), type: 'I' }, { '$': 'V', type: 'S' }, { '$': formatDate(from), type: 'D' }, { '$': formatDate(until), type: 'D' }
-                        ]);
+                       var negotiationDate = toDate(fieldValue(cab, 4));
+                       if (!negotiationDate) return [];
+                       var from = new Date(negotiationDate.getTime()), until = new Date(negotiationDate.getTime());
+                       from.setDate(from.getDate() - 60); until.setDate(until.getDate() + 15);
+                       return loadRecords('CabecalhoNota', ['NUNOTA', 'NUMNOTA', 'DTNEG', 'VLRNOTA', 'CODPARC', 'PESOBRUTO'], '(this.TIPMOV = ? AND this.DTNEG BETWEEN ? AND ?)', [
+                           { '$': 'V', type: 'S' }, { '$': formatDate(from), type: 'D' }, { '$': formatDate(until), type: 'D' }
+                       ]);
                     })
                     .then(function (salesRows) {
                         self.availableSales = (salesRows || []).map(function (sale) { return { nunota: fieldValue(sale, 0), numNota: fieldValue(sale, 1), date: fieldValue(sale, 2), value: money(fieldValue(sale, 3)), partner: fieldValue(sale, 4), weight: numeric(fieldValue(sale, 5)), selected: false, allocation: '', weightPercent: 0 }; });

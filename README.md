@@ -5,11 +5,13 @@ Add-on para o Sankhya Om que permite selecionar notas de venda e distribuir o va
 ## O que o projeto entrega
 
 - Consulta da nota de serviço e bloqueio quando há parcela baixada ou contabilização.
-- Seleção de vendas da mesma empresa em uma janela de 60 dias antes e 15 dias depois da negociação do frete.
+- Seleção de vendas de qualquer empresa em uma janela de 60 dias antes e 15 dias depois da negociação do frete.
+- Filtros por número da nota inicial e final, paginação, seleção em massa e resumo de quantidade e peso.
 - Rateio automático por peso bruto, com fechamento exato do valor do frete.
 - Gravação dos vínculos na tabela `TFV_VINCULO_FRETE_VENDA`.
 - Exclusão física de vínculos pela própria tela, permitindo refazer o rateio.
-- Índice otimizado de CTEs por chave da NF-e na tabela `TFV_CTE_NFE`.
+- Rateio de CTE por peso entre várias NFes, com suporte a CTE principal, secundário e demais CTEs.
+- Tabelas `TFV_CTE` e `TFV_CTE_NFE_RATEIO` para armazenar o CTE e o rateio por NF-e.
 - Job agendado para sincronizar CTEs a partir de 01/07/2026.
 
 ## Estrutura
