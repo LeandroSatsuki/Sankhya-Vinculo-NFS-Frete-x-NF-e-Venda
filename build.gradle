@@ -26,7 +26,7 @@ group = 'br.com.fabricante.addon'
 //Especifica a versão do addon. É útil para controle de versões, deploys e compatibilidade com o sistema.
 version="1.0.38"
 //Define uma breve descrição do addon, explicando sua funcionalidade ou objetivo principal.
-description = "Vinculo Frete x Venda - POC"
+description = "Vínculo de Frete x Venda"
 
 apply(plugin: "br.com.sankhya.addonstudio")
 snkmodule {
