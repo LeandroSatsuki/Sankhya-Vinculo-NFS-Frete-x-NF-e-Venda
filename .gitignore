@@ -1,5 +1,6 @@
 **.ear
 **.jar
+!gradle/wrapper/gradle-wrapper.jar
 **.war
 
 **.gradle/

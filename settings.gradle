@@ -4,6 +4,6 @@
     <a href="https://developer.sankhya.com.br/docs/03_conf_addonstudio"/>
  */
 
-rootProject.name = 'addon-template'
+rootProject.name = 'sankhya-vinculo-frete-venda'
 include 'model'
 include 'vc'
