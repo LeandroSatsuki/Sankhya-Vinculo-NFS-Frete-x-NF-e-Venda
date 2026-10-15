@@ -24,6 +24,33 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
         self.saveMessage = '';
         self.saveError = '';
         self.saved = false;
+        self.savingClassifications = false;
+
+        function addonServiceUrl(method) {
+            return '/addon-template/service.sbr?serviceName=TFVRateioFreteSP.' + method + '&outputType=json';
+        }
+
+        function serviceErrorMessage(error, fallback) {
+            var data = error && error.data ? error.data : {};
+            var responseBody = data.responseBody || {};
+            var serviceBody = responseBody.body || responseBody;
+            return data.statusMessage || data.message || serviceBody.mensagem || (error && error.message) || fallback;
+        }
+
+        function postAddonService(method, parameterName, payload) {
+            var requestBody = {};
+            requestBody[parameterName] = payload;
+            return $http.post(addonServiceUrl(method), {
+                serviceName: 'TFVRateioFreteSP.' + method,
+                requestBody: requestBody
+            }).then(function (response) {
+                var data = response && response.data ? response.data : {};
+                if (String(data.status) !== '1' && String(data.status) !== 'true') {
+                    throw new Error(data.statusMessage || data.message || 'O serviço não confirmou a gravação.');
+                }
+                return data.responseBody || {};
+            });
+        }
 
         function loadRecords(rootEntity, fields, expression, parameters, offsetPage, accumulated) {
             offsetPage = offsetPage || 0;
@@ -39,9 +66,9 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
                     dataSet: {
                         rootEntity: rootEntity,
                         includePresentationFields: 'N',
-                offsetPage: String(offsetPage),
-                useFileBasedPagination: 'true',
-                orderByExpression: fields[0] + ' ASC',
+                        offsetPage: String(offsetPage),
+                        useFileBasedPagination: 'true',
+                        orderByExpression: fields[0] + ' ASC',
                         criteria: criteria,
                         entity: { fieldset: { list: fields.join(',') } }
                     }
@@ -145,6 +172,67 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
             return isNaN(result) ? 0 : result;
         }
 
+        function classificationKey(nunota) {
+            return String(numeric(nunota));
+        }
+
+        function loadClassificationMap(items) {
+            var unique = {};
+            var nunotas = [];
+            angular.forEach(items || [], function (item) {
+                var key = classificationKey(item.nunota);
+                if (key !== '0' && !unique[key]) {
+                    unique[key] = true;
+                    nunotas.push(key);
+                }
+            });
+            if (!nunotas.length) return $q.when({});
+
+            var requests = [];
+            for (var start = 0; start < nunotas.length; start += 200) {
+                (function (batch) {
+                    var placeholders = batch.map(function () { return '?'; }).join(',');
+                    var parameters = batch.map(function (nunota) { return { '$': nunota, type: 'I' }; });
+                    requests.push(loadRecords(
+                        'TFV_CLASSIFICACAO_LOGISTICA',
+                        ['TFV_NUNOTA', 'TFV_TIPO_CARREGAMENTO'],
+                        '(this.TFV_NUNOTA IN (' + placeholders + '))',
+                        parameters
+                    ));
+                })(nunotas.slice(start, start + 200));
+            }
+
+            return $q.all(requests).then(function (pages) {
+                var map = {};
+                angular.forEach(pages, function (rows) {
+                    angular.forEach(rows || [], function (row) {
+                        map[classificationKey(fieldValue(row, 0))] = fieldValue(row, 1) === 'I' ? 'I' : 'N';
+                    });
+                });
+                return map;
+            });
+        }
+
+        function applyClassifications(items, map) {
+            angular.forEach(items || [], function (item) {
+                var key = classificationKey(item.nunota);
+                var persisted = Object.prototype.hasOwnProperty.call(map, key);
+                item.loadingType = persisted ? map[key] : 'N';
+                item.classificationPersisted = persisted;
+                item.classificationDirty = false;
+            });
+        }
+
+        function syncAvailableClassification(nunota, type) {
+            var key = classificationKey(nunota);
+            angular.forEach(self.availableSales, function (sale) {
+                if (classificationKey(sale.nunota) === key) {
+                    sale.loadingType = type;
+                    sale.classificationPersisted = true;
+                }
+            });
+        }
+
         self.recalculate = function () {
             self.totalWeight = self.selectedSales.reduce(function (total, sale) { return total + numeric(sale.weight); }, 0);
             var allocated = 0;
@@ -183,49 +271,64 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
             self.saving = true;
             self.saveMessage = '';
             self.saveError = '';
-            var requests = self.selectedSales.map(function (sale) {
-                return $http.post('/mge/service.sbr?serviceName=CRUDServiceProvider.saveRecord&outputType=json', {
-                    serviceName: 'CRUDServiceProvider.saveRecord',
-                    requestBody: {
-                        dataSet: {
-                            rootEntity: 'TFV_VINCULO_FRETE_VENDA',
-                            includePresentationFields: 'N',
-                            dataRow: { localFields: {
-                                TFV_NUNOTA_FRETE: { '$': String(self.freightNunota) },
-                                TFV_NUNOTA_VENDA: { '$': String(sale.nunota) },
-                                TFV_VLR_RATEIO: { '$': String(numeric(sale.allocation).toFixed(2)) },
-                                TFV_PERCENTUAL: { '$': String(numeric(sale.weightPercent).toFixed(2)) },
-                                TFV_ATIVO: { '$': 'S' },
-                                TFV_ORIGEM: { '$': 'RATEIO_PESO' }
-                            }},
-                            entity: { fieldset: { list: 'TFV_NUNOTA_FRETE,TFV_NUNOTA_VENDA,TFV_VLR_RATEIO,TFV_PERCENTUAL,TFV_ATIVO,TFV_ORIGEM' } }
-                        }
-                    }
-                });
-            });
-            $q.all(requests).then(function (responses) {
-                var failure = null;
-                angular.forEach(responses, function (response) {
-                    var body = response && response.data ? response.data : {};
-                    if (String(body.status) !== '1' && String(body.status) !== 'true') failure = body;
-                });
-                if (failure) {
-                    throw new Error(failure.statusMessage || failure.message || 'O serviço não confirmou a gravação.');
-                }
+            var payload = {
+                nunotaFrete: numeric(self.freightNunota),
+                vendas: self.selectedSales.map(function (sale) {
+                    return {
+                        nunota: numeric(sale.nunota),
+                        valorRateio: Number(numeric(sale.allocation).toFixed(2)),
+                        percentual: Number(numeric(sale.weightPercent).toFixed(2)),
+                        tipoCarregamento: sale.loadingType === 'I' ? 'I' : 'N'
+                    };
+                })
+            };
+            postAddonService('salvarRateio', 'rateio', payload).then(function () {
                 self.links = self.selectedSales.map(function (sale) {
                     return {
                         nunota: sale.nunota,
                         numNota: sale.numNota,
                         noteValue: sale.value,
                         value: money(sale.allocation),
-                        status: 'Ativo'
+                        status: 'Ativo',
+                        loadingType: sale.loadingType === 'I' ? 'I' : 'N',
+                        classificationPersisted: true,
+                        classificationDirty: false
                     };
                 });
                 self.saved = true;
-                self.saveMessage = 'Vínculo gravado com sucesso.';
+                self.saveMessage = 'Rateio e classificação logística gravados com sucesso.';
             }).catch(function (error) {
-                self.saveError = (error && error.data && error.data.statusMessage) || error.message || 'Não foi possível gravar o vínculo.';
+                self.saveError = serviceErrorMessage(error, 'Não foi possível gravar o rateio e a classificação logística.');
             }).finally(function () { self.saving = false; });
+        };
+
+        self.hasDirtyClassifications = function () {
+            return self.links.some(function (link) { return link.classificationDirty; });
+        };
+
+        self.saveLinkClassifications = function () {
+            if (self.savingClassifications || !self.hasDirtyClassifications()) return;
+            var dirtyLinks = self.links.filter(function (link) { return link.classificationDirty; });
+            self.savingClassifications = true;
+            self.saveMessage = '';
+            self.saveError = '';
+            postAddonService('salvarClassificacoes', 'request', {
+                vendas: dirtyLinks.map(function (link) {
+                    return {
+                        nunota: numeric(link.nunota),
+                        tipoCarregamento: link.loadingType === 'I' ? 'I' : 'N'
+                    };
+                })
+            }).then(function () {
+                angular.forEach(dirtyLinks, function (link) {
+                    link.classificationPersisted = true;
+                    link.classificationDirty = false;
+                    syncAvailableClassification(link.nunota, link.loadingType);
+                });
+                self.saveMessage = 'Classificação logística atualizada com sucesso.';
+            }).catch(function (error) {
+                self.saveError = serviceErrorMessage(error, 'Não foi possível salvar a classificação logística.');
+            }).finally(function () { self.savingClassifications = false; });
         };
 
         self.removeLink = function (link) {
@@ -295,12 +398,18 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
                        ]);
                     })
                     .then(function (salesRows) {
-                        self.availableSales = (salesRows || []).map(function (sale) { return { nunota: fieldValue(sale, 0), numNota: fieldValue(sale, 1), date: fieldValue(sale, 2), value: money(fieldValue(sale, 3)), partner: fieldValue(sale, 4), weight: numeric(fieldValue(sale, 5)), selected: false, allocation: '', weightPercent: 0 }; });
-                        return $q.all(self.availableSales.map(function (sale) {
+                        self.availableSales = (salesRows || []).map(function (sale) { return { nunota: fieldValue(sale, 0), numNota: fieldValue(sale, 1), date: fieldValue(sale, 2), value: money(fieldValue(sale, 3)), partner: fieldValue(sale, 4), weight: numeric(fieldValue(sale, 5)), selected: false, allocation: '', weightPercent: 0, loadingType: 'N' }; });
+                        var partnersRequest = $q.all(self.availableSales.map(function (sale) {
                             return loadRecords('Parceiro', ['CODPARC', 'NOMEPARC'], '(this.CODPARC = ?)', [{ '$': String(sale.partner), type: 'I' }]).then(function (partnerRows) {
                                 if (partnerRows && partnerRows.length) sale.partner = fieldValue(partnerRows[0], 1);
                             });
-                        })).then(function () { return loadRecords('Financeiro', ['NUNOTA', 'CTABCOBAIXA']); });
+                        }));
+                        var classificationsRequest = loadClassificationMap(self.availableSales).then(function (map) {
+                            applyClassifications(self.availableSales, map);
+                        });
+                        return $q.all([partnersRequest, classificationsRequest]).then(function () {
+                            return loadRecords('Financeiro', ['NUNOTA', 'CTABCOBAIXA']);
+                        });
                     })
                     .then(function (finRows) {
                         var anySettled = false;
@@ -315,12 +424,15 @@ angular.module('FreteVendaVinculoPOCApp', ['snk'])
                             var nunota = fieldValue(link, 1);
                             return loadRecords('CabecalhoNota', ['NUNOTA', 'NUMNOTA', 'VLRNOTA'], '(this.NUNOTA = ?)', [{ '$': String(nunota), type: 'I' }]).then(function (saleRows) {
                                 var sale = saleRows && saleRows.length ? saleRows[0] : null;
-                                return { nunota: nunota, numNota: fieldValue(sale, 1), noteValue: money(fieldValue(sale, 2)), value: money(fieldValue(link, 2)), status: fieldValue(link, 4) === 'S' ? 'Ativo' : 'Inativo' };
+                                return { nunota: nunota, numNota: fieldValue(sale, 1), noteValue: money(fieldValue(sale, 2)), value: money(fieldValue(link, 2)), status: fieldValue(link, 4) === 'S' ? 'Ativo' : 'Inativo', loadingType: 'N' };
                             });
                         }));
                     })
                     .then(function (links) {
                         self.links = links || [];
+                        return loadClassificationMap(self.links).then(function (map) {
+                            applyClassifications(self.links, map);
+                        });
                     })
                     .catch(function () { self.accounted = 'Não consultado'; self.settledInstallments = 'Não consultado'; });
             }

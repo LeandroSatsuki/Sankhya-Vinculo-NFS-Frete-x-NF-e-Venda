@@ -1,4 +1,4 @@
-.fv-poc { max-width: 960px; margin: 24px auto; padding: 24px; color: #243447; font-family: Arial, sans-serif; background: #fff; }
+.fv-poc { max-width: 1440px; margin: 24px auto; padding: 24px; color: #243447; font-family: Arial, sans-serif; background: #fff; }
 .fv-poc__header, .fv-poc__footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .fv-poc h1 { margin: 0 0 6px; font-size: 24px; }
 .fv-poc h2 { margin-top: 28px; font-size: 18px; }
@@ -8,6 +8,8 @@
 .fv-poc__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .fv-poc label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #637083; }
 .fv-poc input { padding: 9px; border: 1px solid #d8dee8; border-radius: 4px; color: #243447; background: #f7f9fb; }
+.fv-poc select { width: 100%; min-width: 185px; padding: 8px; border: 1px solid #cbd4e0; border-radius: 4px; color: #243447; background: #fff; }
+.fv-poc__table-wrap { width: 100%; overflow-x: auto; }
 .fv-poc table { width: 100%; border-collapse: collapse; }
 .fv-poc th, .fv-poc td { padding: 10px; border-bottom: 1px solid #e7ebf0; text-align: left; }
 .fv-poc th { cursor: pointer; user-select: none; }
@@ -20,7 +22,13 @@
 .fv-poc__selection-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0; padding: 12px; background: #f7f9fb; border: 1px solid #e7ebf0; color: #637083; font-size: 13px; }
 .fv-poc__selection-footer button + button { margin-left: 8px; }
 .fv-poc__allocation { display: flex; gap: 24px; margin-top: 14px; padding: 12px; background: #f7f9fb; }
-.fv-poc__allocation { display: flex; gap: 24px; margin-top: 14px; padding: 12px; background: #f7f9fb; }
+.fv-poc__loading-cell { min-width: 235px; }
+.fv-poc__industry-warning { display: block; max-width: 310px; margin-top: 6px; padding: 6px 8px; border-left: 3px solid #d79b00; color: #805b00; background: #fff8e6; font-size: 11px; line-height: 1.35; }
+.fv-poc__linked-actions { display: flex; justify-content: flex-end; margin: 12px 0; }
+.fv-poc__message { margin-top: 16px; padding: 10px 12px; border-radius: 4px; }
+.fv-poc__message--success { color: #1c6332; background: #edf8f0; border: 1px solid #b8dfc3; }
+.fv-poc__message--error { color: #8a2525; background: #fff0f0; border: 1px solid #edbaba; }
 .fv-poc__footer { margin-top: 28px; justify-content: flex-end; }
 .fv-poc button { padding: 9px 14px; border: 1px solid #b9c2cf; border-radius: 4px; background: #fff; cursor: pointer; }
+.fv-poc button:disabled { cursor: default; opacity: .55; }
 .fv-poc button.primary { border-color: #8fa9c8; background: #dbe8f7; }

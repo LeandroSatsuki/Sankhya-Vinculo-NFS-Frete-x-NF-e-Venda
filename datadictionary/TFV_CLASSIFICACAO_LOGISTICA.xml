@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="../.gradle/metadados.xsd">
+    <table name="TFV_CLASSIFICACAO_LOGISTICA" sequenceType="M">
+        <description>Classificação logística da nota de venda</description>
+        <primaryKey>
+            <field name="TFV_NUNOTA" />
+        </primaryKey>
+        <instances>
+            <instance name="TFV_CLASSIFICACAO_LOGISTICA">
+                <description>Classificação logística por nota de venda</description>
+            </instance>
+        </instances>
+        <fields>
+            <field name="TFV_NUNOTA" dataType="INTEIRO" required="true" nullable="N">
+                <description>Número único da nota de venda</description>
+            </field>
+            <field name="TFV_TIPO_CARREGAMENTO" dataType="LISTA" size="1" required="true" nullable="N" default="N">
+                <description>Tipo de carregamento: N normal ou I direto da indústria</description>
+                <fieldOptions>
+                    <option value="N">Movimentação normal</option>
+                    <option value="I">Direto da indústria</option>
+                </fieldOptions>
+            </field>
+            <field name="TFV_CODUSU" dataType="INTEIRO" required="true" nullable="N">
+                <description>Usuário da última alteração</description>
+            </field>
+            <field name="TFV_DHALTER" dataType="DATA" required="true" nullable="N">
+                <description>Data e hora da última alteração</description>
+            </field>
+        </fields>
+    </table>
+</metadados>

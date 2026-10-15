@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <img alt="Versão 1.0.39" src="https://img.shields.io/badge/versão-1.0.39-2E7D32?style=flat-square">
   <img alt="Sankhya Om" src="https://img.shields.io/badge/Sankhya_Om-005CA9?style=flat-square">
   <img alt="Java" src="https://img.shields.io/badge/Java_8-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black">
@@ -59,6 +60,8 @@ gravação dos vínculos no Sankhya
 - cálculo automático do percentual e valor de cada venda;
 - ajuste da última linha para eliminar diferenças de arredondamento;
 - gravação e exclusão por serviços nativos do Sankhya;
+- classificação logística individual por nota, com movimentação normal ou carga direta da indústria;
+- auditoria da classificação por usuário e data/hora, independente do vínculo de frete;
 - job agendado para leitura dos XMLs de CT-e;
 - rateio de CT-e entre as NF-e referenciadas.
 
@@ -70,11 +73,13 @@ gravação dos vínculos no Sankhya
 | `model/` | Job Java para sincronização e rateio de CT-e |
 | `datadictionary/` | Tabelas, campos e metadados do add-on |
 | `dbscripts/` | Orientações sobre scripts e Auto DDL |
+| `docs/` | Documentação funcional e contratos de integração |
 | `gradle/` | Wrapper e configuração do Add-on Studio |
 
 ### Estruturas de dados
 
 - `TFV_VINCULO_FRETE_VENDA`: vínculo e valor distribuído entre frete e venda;
+- `TFV_CLASSIFICACAO_LOGISTICA`: tipo de carregamento por Número Único da nota de venda;
 - `TFV_CTE`: informações consolidadas do CT-e;
 - `TFV_CTE_NFE`: índice de documentos relacionados;
 - `TFV_CTE_NFE_RATEIO`: peso e valor do CT-e distribuído por NF-e.
@@ -127,6 +132,12 @@ A publicação exige credenciais do Portal do Desenvolvedor e a chave privada lo
   -PprivateKey="C:\caminho\sign_key.key"
 ```
 
+Após a publicação, a versão deve ser promovida no Portal do Desenvolvedor e instalada pela tela **Minhas Soluções** do Sankhya Om.
+
+## Classificação logística
+
+A classificação logística não altera o frete, o CT-e nem o cálculo do rateio. Para detalhes de campos, serviços e integração com o relatório de margem, consulte [Classificação logística por nota de venda](docs/CLASSIFICACAO_LOGISTICA.md).
+
 ## Validação funcional
 
 Antes de publicar uma versão, valide em homologação:
@@ -137,7 +148,10 @@ Antes de publicar uma versão, valide em homologação:
 4. rateio por peso com saldo final zerado;
 5. gravação, consulta e exclusão dos vínculos;
 6. leitura dos XMLs de CT-e pelo job;
-7. distribuição do CT-e entre todas as NF-e relacionadas.
+7. distribuição do CT-e entre todas as NF-e relacionadas;
+8. persistência de classificações diferentes em notas do mesmo rateio;
+9. reabertura da tela mantendo a classificação por `NUNOTA`;
+10. carga direta com frete e CT-e preservados.
 
 ## Segurança
 
