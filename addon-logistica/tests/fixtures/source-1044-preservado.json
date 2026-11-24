@@ -1,0 +1,27 @@
+{
+  "files": {
+    "model/src/main/java/br/com/telemassas/logistica/jobs/AtualizaCteNfeJob.java": "ab9da3e8198fcedba8b3ebae4534fabf205e3e80b8f8e16d518589672590a16e",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/ManutencaoPolicy.java": "211c7cdb8d52351a887f91504a6411261386570baf0041549b16c86bd045195a",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/ManutencaoVinculoController.java": "48ab8e83354f5dafeb8e4b9ea6002d23045e1e1f4ca9728c888d33a20329bea5",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/RateioFreteController.java": "aa197773bec306c8c77eb9f7731d2641a873999de5bdaf9695aacbbd1e4b2178",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/dto/ClassificacaoLogisticaRequest.java": "7701a5df9146777ba90adf59eba4df84b9015b41de617267af923295b3abe49d",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/dto/ConsultaVinculoRequest.java": "314e3e597afb7fbf0e22db8e80127183dbfb403f15fd6bd03101d1c0371c435e",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/dto/InativarVinculoRequest.java": "ef6ca43bd797c46bbd12a34d860bd7ae9b2a322e31ad057a1304f7a75fcbd18a",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/dto/RateioFreteRequest.java": "b1e73669d72284a2edefd847f57297005ffa9c5cec191426bfe0da75778eaf18",
+    "model/src/main/java/br/com/telemassas/logistica/rateio/dto/VendaRateioDTO.java": "eff0ab3e46d3f2e3f2e57181aab8d3eb72d42ebd972243333b9256aff104ab30",
+    "model/src/main/resources/META-INF/parameter.xml": "50c0513609626ee2cee2b3e198f65633790c413768e9fb4349f8868e84891029",
+    "vc/src/main/webapp/assets/Atencao.md": "c6d8b8d3d6f119a5c36fe68225c5ec8da1cabed288e0c4f86c568735ff4c0881",
+    "vc/src/main/webapp/assets/icon.png": "3185e0d997cbfb4c655b9edd025f448d59a1586304a165f17fab4f7ebfde3086",
+    "vc/src/main/webapp/WEB-INF/web.xml": "4b7a2f491e8e1b3e0cc0d0602b82edb8034f9d8a5756a8444fffda51033003b9",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/FreteVendaVinculoPOC.css": "257f5a3fa05403cbe0bfafdc329f50f6d4b6e0e5c1d18bf3137952d8f6d79e48",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/FreteVendaVinculoPOC.html": "bebe6e7597ad9f6c3285affbf53ced96b43c70cd593f27071788c210b904b9f7",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/FreteVendaVinculoPOC.i18n.json": "e3566b3a06430868d71e9287dfd6c6c520a3da027aabea01951d407ee131dc2f",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/FreteVendaVinculoPOC.js": "89877bd77ec585f3ce2271f21e0095a0bffccda0f45cbe5c8380ac19c3f11540",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/launcher/FreteVendaVinculoPOC.body": "52ac20511e808243474847e8c9242fbdf939bfba02219fd5000897b77834bf72",
+    "vc/src/main/webapp/html5/FreteVendaVinculoPOC/launcher/FreteVendaVinculoPOC.include": "3ed9a073a477fdb6e5deff85b152789bb8bfd65cfdcbd0af298b131ecdc6eecc",
+    "datadictionary/LGC_HIST_VINCULO.xml": "f9b8f9c687818051afb8d804cd7f3bd7870307146741bae6426fd84f190815db",
+    "datadictionary/menu.xml": "6bfa29c4cff1c5c7b14d5666b2f09483910e06b2c524564a27029266a86bb021",
+    "dbscripts/README.md": "dfeb700dc46225135f14057cba10cd6a1e62235a4fac90917115aa205e83f301",
+    "dbscripts/V1_historico_vinculo.xml": "5eadaea4c7d05795b46f9da49d1ae79de81b3974e243739139b47cca51ced77c"
+  }
+}

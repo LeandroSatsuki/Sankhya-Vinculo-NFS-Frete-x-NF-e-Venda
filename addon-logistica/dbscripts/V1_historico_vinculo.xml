@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scripts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../.gradle/scripts.xsd">
+  <sql nomeTabela="LGC_HIST_VINCULO" ordem="1" executar="SE_NAO_EXISTIR" tipoObjeto="TABLE" nomeObjeto="LGC_HIST_VINCULO" descricao="Cria somente o histórico próprio da LOGISTICA; sem alteração das estruturas TFV.">
+    <oracle><![CDATA[CREATE TABLE LGC_HIST_VINCULO (
+ ID VARCHAR2(36) PRIMARY KEY, CUSTO NUMBER(15) NOT NULL, NOTA NUMBER(15) NOT NULL,
+ VALOR NUMBER NOT NULL, PERCENTUAL NUMBER, ATIVO_ANTES VARCHAR2(1) NOT NULL,
+ ATIVO_DEPOIS VARCHAR2(1) NOT NULL, CODUSU NUMBER(15) NOT NULL, DHALTER TIMESTAMP NOT NULL,
+ MOTIVO VARCHAR2(500 CHAR) NOT NULL, ORFAO VARCHAR2(1) NOT NULL, VERSAO VARCHAR2(64) NOT NULL
+)]]></oracle>
+  </sql>
+</scripts>

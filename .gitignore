@@ -38,3 +38,15 @@ desktop.ini
 sign_key.key
 **/sign_key.key
 ROTEIRO JUNHO*.xlsx
+
+# Private delivery artifacts and operational evidence
+**/*.exts
+**/*.ext
+**/*.class
+**/__pycache__/
+**/outputs/
+**/work/
+**/*.log
+**/*.pfx
+**/*.p12
+**/*.pem

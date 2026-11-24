@@ -1,0 +1,2 @@
+# Preserve SHA-256 provenance of imported delivery sources across Windows/Linux.
+addon-logistica/** -text -whitespace

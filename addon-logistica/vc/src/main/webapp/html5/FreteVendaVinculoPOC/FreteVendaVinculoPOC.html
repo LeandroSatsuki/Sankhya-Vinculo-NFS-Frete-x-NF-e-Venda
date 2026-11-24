@@ -1,0 +1,172 @@
+<sk-application ng-controller="FreteVendaVinculoPOCController as ctrl" creation-complete="ctrl.init()">
+    <section class="fv-poc">
+        <header class="fv-poc__header">
+            <div>
+                <h1>Vínculo de frete x venda</h1>
+                <p>Gravação controlada do vínculo entre frete e vendas.</p>
+            </div>
+        </header>
+
+        <div class="fv-poc__tabs">
+            <button type="button" ng-click="ctrl.managementMode=true">Consultar vínculos</button>
+            <button type="button" ng-click="ctrl.managementMode=false" ng-disabled="!ctrl.freightNunota">Rateio do documento aberto</button>
+        </div>
+        <section ng-if="ctrl.managementMode" class="fv-maintenance">
+            <h2>Consultar vínculos por NF ou custo</h2>
+            <p>Pesquise os vínculos manuais. A inativação preserva o histórico e não redistribui valores.</p>
+            <form class="fv-poc__filters" ng-submit="ctrl.maintenance.message='';ctrl.searchLinks(0)">
+                <label>Pesquisar por<select ng-model="ctrl.lookup.tipo" ng-disabled="ctrl.maintenance.busy">
+                    <option value="NF_NUNOTA">Nº único da NF</option><option value="NF_NUMERO">Número fiscal da NF</option><option value="CUSTO_NUNOTA">Nº único do custo</option>
+                </select></label>
+                <label>Número<input type="text" inputmode="numeric" ng-model="ctrl.lookup.numero" maxlength="15" required ng-disabled="ctrl.maintenance.busy"></label>
+                <label>Empresa da NF (opcional)<input type="text" inputmode="numeric" ng-model="ctrl.lookup.empresa" maxlength="15" ng-disabled="ctrl.maintenance.busy"></label>
+                <button type="submit" ng-disabled="ctrl.maintenance.busy">{{ctrl.maintenance.busy ? 'Consultando...' : 'Pesquisar'}}</button>
+            </form>
+            <div role="alert" class="fv-poc__message fv-poc__message--error" ng-if="ctrl.maintenance.error">{{ctrl.maintenance.error}}</div>
+            <div role="status" class="fv-poc__message fv-poc__message--success" ng-if="ctrl.maintenance.message">{{ctrl.maintenance.message}}</div>
+            <p ng-if="ctrl.maintenance.documents">Selecione a NF correta. Mesmo número pode existir em empresas ou séries diferentes.</p>
+            <div class="fv-poc__table-wrap" ng-if="ctrl.maintenance.documents && ctrl.maintenance.items.length">
+                <table><thead><tr><th>NF / Nº único</th><th>Empresa / Série</th><th>Data</th><th>Cliente</th><th></th></tr></thead>
+                <tbody><tr ng-repeat="item in ctrl.maintenance.items track by item.nota">
+                    <td>{{item.nf}} / {{item.nota}}</td><td>{{item.empresa}} / {{item.serie || '—'}}</td><td>{{item.data}}</td><td>{{item.cliente}}</td>
+                    <td><button type="button" ng-click="ctrl.selectDocument(item)" ng-disabled="ctrl.maintenance.busy">Ver vínculos</button></td>
+                </tr></tbody></table>
+            </div>
+            <div class="fv-poc__table-wrap" ng-if="!ctrl.maintenance.documents && ctrl.maintenance.items.length">
+                <table><thead><tr><th>Custo</th><th>NF beneficiária</th><th>Valor atribuído</th><th>Situação</th><th></th></tr></thead>
+                <tbody><tr ng-repeat="item in ctrl.maintenance.items track by (item.custo + ':' + item.nota)">
+                    <td><strong>{{item.nf_custo ? 'NF ' + item.nf_custo : 'Documento ausente'}}</strong><small>Nº único {{item.custo}}</small></td>
+                    <td><strong>{{item.nf || 'NF ausente'}}</strong><small>Nº único {{item.nota}} · Empresa {{item.empresa || '—'}} · {{item.data}}</small><small>{{item.cliente}}</small></td>
+                    <td class="fv-money">{{item.valor | currency:'R$ ':2}}</td>
+                    <td>{{item.ativo === 'S' ? 'Ativo' : 'Inativo'}}<small ng-if="item.orfao">Documento de custo ausente</small></td>
+                    <td><button type="button" ng-if="item.ativo === 'S'" ng-disabled="ctrl.maintenance.busy || !ctrl.maintenance.canChange || (item.orfao && !ctrl.maintenance.canSanitize)" ng-click="ctrl.prepareInactivation(item)">Inativar vínculo</button></td>
+                </tr></tbody></table>
+            </div>
+            <p class="fv-poc__empty" ng-if="ctrl.maintenance.searched && !ctrl.maintenance.items.length && !ctrl.maintenance.busy">Nenhum registro encontrado.</p>
+            <div class="fv-poc__pagination" ng-if="ctrl.maintenance.searched && (ctrl.maintenance.page > 0 || ctrl.maintenance.more)">
+                <button type="button" ng-click="ctrl.maintenancePage(-1)" ng-disabled="ctrl.maintenance.busy || ctrl.maintenance.page === 0">Anterior</button>
+                <span>Página {{ctrl.maintenance.page + 1}}</span><button type="button" ng-click="ctrl.maintenancePage(1)" ng-disabled="ctrl.maintenance.busy || !ctrl.maintenance.more">Próxima</button>
+            </div>
+            <section class="fv-confirm" role="region" aria-label="Confirmar inativação" ng-if="ctrl.maintenance.pending">
+                <h2>Confirmar inativação</h2>
+                <p>Custo {{ctrl.maintenance.pending.custo}} × NF {{ctrl.maintenance.pending.nf}} (Nº único {{ctrl.maintenance.pending.nota}}): <strong>{{ctrl.maintenance.pending.valor | currency:'R$ ':2}}</strong>.</p>
+                <p>Somente este vínculo será inativado. Nenhuma NF será excluída e o valor não será transferido para outras notas. Pode restar saldo não alocado no documento de custo.</p>
+                <label>Motivo<textarea ng-model="ctrl.maintenance.reason" minlength="10" maxlength="500" rows="3" ng-disabled="ctrl.maintenance.busy"></textarea></label>
+                <label class="fv-check" ng-if="ctrl.maintenance.pending.orfao"><input type="checkbox" ng-model="ctrl.maintenance.orphanConsent" ng-disabled="ctrl.maintenance.busy">Confirmo o saneamento do vínculo órfão. A ausência do documento não comprova sua situação financeira.</label>
+                <button type="button" ng-click="ctrl.maintenance.pending=null" ng-disabled="ctrl.maintenance.busy">Cancelar</button>
+                <button type="button" ng-click="ctrl.confirmInactivation()" ng-disabled="ctrl.maintenance.busy || !ctrl.maintenance.reason || ctrl.maintenance.reason.trim().length < 10 || (ctrl.maintenance.pending.orfao && !ctrl.maintenance.orphanConsent)">Confirmar inativação</button>
+            </section>
+            <p class="fv-scope">Esta consulta mantém vínculos manuais TFV. CT-es automáticos e rateios operacionais não são alterados por esta ação.</p>
+        </section>
+        <section ng-if="!ctrl.managementMode">
+        <div class="fv-poc__notice">
+            O vínculo ficará disponível somente enquanto a nota de serviço não possuir parcela baixada e não estiver contabilizada.
+        </div>
+
+        <div class="fv-poc__grid">
+            <label>Nota de serviço (NUNOTA)<input type="text" ng-model="ctrl.freightNunota" readonly></label>
+            <label>Valor do frete<input type="text" ng-model="ctrl.freightValue" readonly></label>
+            <label>Contabilizada?<input type="text" ng-model="ctrl.accounted" readonly></label>
+            <label>Parcelas baixadas<input type="text" ng-model="ctrl.settledInstallments" readonly></label>
+        </div>
+
+        <h2>Vendas vinculadas</h2>
+        <div class="fv-poc__empty" ng-if="!ctrl.links.length">Nenhum vínculo carregado nesta POC.</div>
+        <div class="fv-poc__table-wrap" ng-if="ctrl.links.length">
+            <table>
+                <thead><tr><th>Nº Único</th><th>Nº Nota</th><th>Valor da nota</th><th>Valor atribuído</th><th>Tipo de carregamento</th><th>Situação</th><th></th></tr></thead>
+                <tbody>
+                    <tr ng-repeat="link in ctrl.links">
+                        <td>{{link.nunota}}</td><td>{{link.numNota}}</td><td>{{link.noteValue}}</td><td>{{link.value}}</td>
+                        <td class="fv-poc__loading-cell">
+                            <select ng-model="link.loadingType" ng-change="link.classificationDirty=true">
+                                <option value="N">Movimentação normal</option><option value="I">Direto da indústria</option>
+                            </select>
+                            <span class="fv-poc__industry-warning" ng-if="link.loadingType === 'I'">Carga direta: esta nota não gerará custo de movimentação/armazenagem.</span>
+                        </td>
+                        <td>{{link.status}}</td>
+                        <td><button type="button" ng-if="link.status === 'Ativo'" ng-click="ctrl.removeLink(link)" ng-disabled="link.removing">Consultar vínculo</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="fv-poc__linked-actions" ng-if="ctrl.links.length">
+            <button type="button" ng-click="ctrl.saveLinkClassifications()" ng-disabled="ctrl.savingClassifications || !ctrl.hasDirtyClassifications()">
+                {{ctrl.savingClassifications ? 'Salvando...' : 'Salvar classificação logística'}}
+            </button>
+        </div>
+
+        <div class="fv-poc__empty" ng-if="!ctrl.selectionConfirmed && ctrl.links.length">
+            Consulte os vínculos para revisar o estado. A inativação não redistribui o rateio nem altera a classificação logística.
+        </div>
+
+        <div ng-if="!ctrl.selectionConfirmed && !ctrl.links.length">
+            <h2>1. Selecionar notas de venda</h2>
+            <div class="fv-poc__filters">
+                <label>Número da nota inicial<input type="number" ng-model="ctrl.noteFilterInitial" min="0"></label>
+                <label>Número da nota final<input type="number" ng-model="ctrl.noteFilterFinal" min="0"></label>
+                <button type="button" ng-click="ctrl.applyNoteFilter()">Buscar</button><button type="button" ng-click="ctrl.clearNoteFilter()">Limpar</button>
+            </div>
+            <div class="fv-poc__empty" ng-if="!ctrl.availableSales.length">Nenhuma venda encontrada.</div>
+            <div class="fv-poc__table-wrap" ng-if="ctrl.availableSales.length">
+                <table>
+                    <thead><tr><th>Selecionar</th><th>Nº Único</th><th>Nº Nota</th><th>Dt. negociação</th><th>Valor</th><th>Parceiro</th><th>Tipo de carregamento</th></tr></thead>
+                    <tbody>
+                        <tr ng-repeat="sale in ctrl.filteredSales() | limitTo:ctrl.salesPageSize:(ctrl.salesPage * ctrl.salesPageSize)">
+                            <td><input type="checkbox" ng-model="sale.selected" ng-change="ctrl.toggleSale(sale)"></td>
+                            <td>{{sale.nunota}}</td><td>{{sale.numNota}}</td><td>{{sale.date}}</td><td>{{sale.value}}</td><td>{{sale.partner}}</td>
+                            <td class="fv-poc__loading-cell">
+                                <select ng-model="sale.loadingType"><option value="N">Movimentação normal</option><option value="I">Direto da indústria</option></select>
+                                <span class="fv-poc__industry-warning" ng-if="sale.loadingType === 'I'">Carga direta: esta nota não gerará custo de movimentação/armazenagem.</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="fv-poc__empty" ng-if="ctrl.availableSales.length && !ctrl.filteredSales().length">Nenhuma venda encontrada para o filtro informado.</div>
+            <div class="fv-poc__pagination" ng-if="ctrl.filteredSales().length > ctrl.salesPageSize">
+                <button type="button" ng-click="ctrl.previousSalesPage()" ng-disabled="ctrl.salesPage === 0">Anterior</button>
+                <span>Página {{ctrl.salesPage + 1}} de {{ctrl.salesPageCount()}}</span>
+                <button type="button" ng-click="ctrl.nextSalesPage()" ng-disabled="ctrl.salesPage + 1 >= ctrl.salesPageCount()">Próxima</button>
+            </div>
+            <div class="fv-poc__selection-footer">
+                <div><strong>{{ctrl.filteredSales().length}}</strong> notas encontradas <span>|</span> Peso total: <strong>{{ctrl.filteredSalesWeight() | number:2}}</strong></div>
+                <div><button type="button" ng-click="ctrl.markAllFiltered()">Marcar todos</button><button type="button" ng-click="ctrl.unmarkAllFiltered()">Desmarcar</button></div>
+            </div>
+            <button type="button" ng-if="ctrl.selectedSales.length" ng-click="ctrl.confirmSelection()">Confirmar seleção</button>
+        </div>
+
+        <div ng-if="ctrl.selectionConfirmed">
+            <h2>2. Rateio automático pelo peso bruto</h2>
+            <div class="fv-poc__table-wrap">
+                <table>
+                    <thead><tr><th>Nº Único</th><th>Nº Nota</th><th>Parceiro</th><th>Peso bruto</th><th>% peso</th><th>Valor alocado</th><th>Tipo de carregamento</th><th></th></tr></thead>
+                    <tbody>
+                        <tr ng-repeat="sale in ctrl.selectedSales">
+                            <td>{{sale.nunota}}</td><td>{{sale.numNota}}</td><td>{{sale.partner}}</td><td>{{sale.weight | number:2}}</td><td>{{sale.weightPercent | number:2}}%</td><td>{{sale.allocation | currency:'R$ ':2}}</td>
+                            <td class="fv-poc__loading-cell">
+                                <select ng-model="sale.loadingType"><option value="N">Movimentação normal</option><option value="I">Direto da indústria</option></select>
+                                <span class="fv-poc__industry-warning" ng-if="sale.loadingType === 'I'">Carga direta: esta nota não gerará custo de movimentação/armazenagem.</span>
+                            </td>
+                            <td><button type="button" ng-click="sale.selected=false;ctrl.toggleSale(sale);ctrl.selectionConfirmed=false">Remover</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="fv-poc__allocation">
+                <span>Peso total: <strong>{{ctrl.totalWeight | number:2}}</strong></span><span>Frete: <strong>{{ctrl.freightTotal | currency:'R$ ':2}}</strong></span><span>Distribuído: <strong>{{ctrl.allocatedTotal | currency:'R$ ':2}}</strong></span><span>Saldo: <strong>{{ctrl.balance | currency:'R$ ':2}}</strong></span>
+            </div>
+            <button type="button" ng-click="ctrl.backToSelection()">Voltar à seleção</button>
+        </div>
+
+        <div class="fv-poc__message fv-poc__message--success" ng-if="ctrl.saveMessage">{{ctrl.saveMessage}}</div>
+        <div class="fv-poc__message fv-poc__message--error" ng-if="ctrl.saveError">{{ctrl.saveError}}</div>
+        <footer class="fv-poc__footer">
+            <button type="button" ng-click="ctrl.close()">Fechar</button>
+            <button type="button" class="primary" ng-disabled="ctrl.saving || ctrl.saved || !ctrl.selectedSales.length || ctrl.balance > 0.01 || ctrl.balance < -0.01" ng-click="ctrl.confirmAllocation()">
+                {{ctrl.saving ? 'Gravando...' : (ctrl.saved ? 'Rateio confirmado' : '3. Confirmar rateio')}}
+            </button>
+        </footer>
+        </section>
+    </section>
+</sk-application>

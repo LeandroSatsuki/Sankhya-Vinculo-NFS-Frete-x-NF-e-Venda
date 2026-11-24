@@ -1,0 +1,29 @@
+name: Verify LOGISTICA release
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline-checks:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+      - name: Verify version index and source hashes
+        run: node scripts/verify-release.mjs
+      - name: Check frontend syntax
+        run: node --check addon-logistica/vc/src/main/webapp/html5/FreteVendaVinculoPOC/FreteVendaVinculoPOC.js
+      - name: Run existing offline frontend regression
+        run: node addon-logistica/tests/maintenance-ui.test.js
+      - name: Run existing offline Python and Java regressions
+        run: python -m unittest discover -s addon-logistica/tests -v

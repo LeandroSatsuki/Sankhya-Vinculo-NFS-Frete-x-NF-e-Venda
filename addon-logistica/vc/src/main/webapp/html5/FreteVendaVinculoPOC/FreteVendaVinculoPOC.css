@@ -1,0 +1,44 @@
+.fv-poc { max-width: 1440px; margin: 24px auto; padding: 24px; color: #243447; font-family: Arial, sans-serif; background: #fff; }
+.fv-poc__header, .fv-poc__footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.fv-poc h1 { margin: 0 0 6px; font-size: 24px; }
+.fv-poc h2 { margin-top: 28px; font-size: 18px; }
+.fv-poc p { margin: 0; color: #637083; }
+.fv-poc__badge { padding: 5px 10px; border-radius: 12px; background: #fff1cc; color: #805b00; font-size: 12px; font-weight: bold; }
+.fv-poc__notice { margin: 22px 0; padding: 12px 14px; border-left: 4px solid #d79b00; background: #fff8e6; }
+.fv-poc__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.fv-poc label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #637083; }
+.fv-poc input { padding: 9px; border: 1px solid #d8dee8; border-radius: 4px; color: #243447; background: #f7f9fb; }
+.fv-poc select { width: 100%; min-width: 185px; padding: 8px; border: 1px solid #cbd4e0; border-radius: 4px; color: #243447; background: #fff; }
+.fv-poc__table-wrap { width: 100%; overflow-x: auto; }
+.fv-poc table { width: 100%; border-collapse: collapse; }
+.fv-poc th, .fv-poc td { padding: 10px; border-bottom: 1px solid #e7ebf0; text-align: left; }
+.fv-poc th { cursor: pointer; user-select: none; }
+.fv-poc__empty { padding: 18px; color: #637083; background: #f7f9fb; }
+.fv-poc__filters { display: flex; align-items: flex-end; gap: 12px; margin: 12px 0 16px; padding: 12px; background: #f7f9fb; border: 1px solid #e7ebf0; }
+.fv-poc__filters label { min-width: 180px; }
+.fv-poc__filters button { height: 36px; }
+.fv-poc__pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 16px 0; }
+.fv-poc__pagination span { color: #637083; font-size: 13px; }
+.fv-poc__selection-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0; padding: 12px; background: #f7f9fb; border: 1px solid #e7ebf0; color: #637083; font-size: 13px; }
+.fv-poc__selection-footer button + button { margin-left: 8px; }
+.fv-poc__allocation { display: flex; gap: 24px; margin-top: 14px; padding: 12px; background: #f7f9fb; }
+.fv-poc__loading-cell { min-width: 235px; }
+.fv-poc__industry-warning { display: block; max-width: 310px; margin-top: 6px; padding: 6px 8px; border-left: 3px solid #d79b00; color: #805b00; background: #fff8e6; font-size: 11px; line-height: 1.35; }
+.fv-poc__linked-actions { display: flex; justify-content: flex-end; margin: 12px 0; }
+.fv-poc__message { margin-top: 16px; padding: 10px 12px; border-radius: 4px; }
+.fv-poc__message--success { color: #1c6332; background: #edf8f0; border: 1px solid #b8dfc3; }
+.fv-poc__message--error { color: #8a2525; background: #fff0f0; border: 1px solid #edbaba; }
+.fv-poc__footer { margin-top: 28px; justify-content: flex-end; }
+.fv-poc button { padding: 9px 14px; border: 1px solid #b9c2cf; border-radius: 4px; background: #fff; cursor: pointer; }
+.fv-poc button:disabled { cursor: default; opacity: .55; }
+.fv-poc button.primary { border-color: #8fa9c8; background: #dbe8f7; }
+
+.fv-poc__tabs { display:flex; gap:10px; margin:18px 0; }
+.fv-maintenance small { display:block; margin-top:5px; color:#637083; font-size:12px; }
+.fv-maintenance .fv-money { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.fv-confirm { padding:18px; margin-top:20px; border:1px solid #d79b00; background:#fff8e6; }
+.fv-confirm h2 { margin-top:0; }
+.fv-confirm textarea { padding:10px; font:inherit; border:1px solid #b9c2cf; margin:8px 0 14px; width:100%; box-sizing:border-box; }
+.fv-check { flex-direction:row!important; align-items:flex-start; margin:10px 0; }
+.fv-scope { font-size:12px; margin-top:20px!important; }
+@media(max-width:760px){.fv-poc{margin:0;padding:14px}.fv-poc__filters{flex-wrap:wrap}.fv-poc__filters label{min-width:140px;flex:1}.fv-poc__grid{grid-template-columns:repeat(2,1fr)}.fv-poc__table-wrap{max-height:65vh;overflow:auto}.fv-poc th{position:sticky;top:0;background:#f7f9fb}.fv-maintenance table{min-width:680px}}

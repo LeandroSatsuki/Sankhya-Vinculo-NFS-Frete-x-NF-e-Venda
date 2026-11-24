@@ -1,5 +1,12 @@
 # Changelog
 
+## Repositório — 24/11/2026
+
+- Importados os fontes e testes da LOGISTICA 1.0.45 em `addon-logistica/`, preservando o original 1.0.39 na raiz.
+- Adicionados índice de versões, manifesto SHA-256 da entrega e documentação de coexistência/integração com margem.
+- Adicionada CI sem acesso ao ERP para detectar divergência entre versão, fontes e manifesto.
+- Pacotes licenciados, credenciais e evidências com dados operacionais permanecem fora do Git. Nenhuma alteração funcional ou novo deploy foi realizado.
+
 Todas as mudanças relevantes deste projeto serão documentadas aqui. O projeto adotará Versionamento Semântico quando existir um artefato versionável.
 
 ## [1.0.39] - 2026-09-15
