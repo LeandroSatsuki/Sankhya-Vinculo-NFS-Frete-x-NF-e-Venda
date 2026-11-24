@@ -1,5 +1,16 @@
 # Vínculo de Frete x Venda — Sankhya Om
 
+## Projetos disponíveis
+
+| Projeto | Versão | Fontes |
+|---|---|---|
+| Original / Vinculo Notas | **1.0.39** | Raiz deste repositório |
+| LOGISTICA / VINCULO FRETE | **1.0.45** | [`addon-logistica/`](addon-logistica/) |
+
+São projetos independentes que coexistem e compartilham as tabelas TFV. A versão da raiz não representa a versão da LOGISTICA. Consulte o [mapa de versões, vínculos e processo de entrega](docs/VERSOES.md) e o [índice verificável](releases/index.json).
+
+Os fontes da LOGISTICA 1.0.45 foram recuperados da entrega preservada, com hashes conferidos. `node scripts/verify-release.mjs` verifica versões e integridade; a CI executa regressões locais sem acessar o ERP. As seções seguintes descrevem o projeto original.
+
 <p align="center">
   Add-on para vincular documentos de frete às respectivas notas de venda e distribuir custos proporcionalmente ao peso bruto.
 </p>

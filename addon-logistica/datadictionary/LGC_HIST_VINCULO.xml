@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadados><table name="LGC_HIST_VINCULO" sequenceType="M"><description>Histórico de inativação de vínculos LOGISTICA</description><primaryKey><field name="ID"/></primaryKey><instances><instance name="LGC_HIST_VINCULO"><description>Histórico de vínculos LOGISTICA</description></instance></instances><fields>
+<field name="ID" dataType="TEXTO" size="36" required="true"><description>ID</description></field>
+<field name="CUSTO" dataType="INTEIRO" required="true"><description>CUSTO</description></field>
+<field name="NOTA" dataType="INTEIRO" required="true"><description>NOTA</description></field>
+<field name="VALOR" dataType="DECIMAL" required="true"><description>VALOR</description></field>
+<field name="PERCENTUAL" dataType="DECIMAL" required="false"><description>PERCENTUAL</description></field>
+<field name="ATIVO_ANTES" dataType="TEXTO" size="1" required="true"><description>ATIVO_ANTES</description></field>
+<field name="ATIVO_DEPOIS" dataType="TEXTO" size="1" required="true"><description>ATIVO_DEPOIS</description></field>
+<field name="CODUSU" dataType="INTEIRO" required="true"><description>CODUSU</description></field>
+<field name="DHALTER" dataType="DATA_HORA" required="true"><description>DHALTER</description></field>
+<field name="MOTIVO" dataType="TEXTO" size="500" required="true"><description>MOTIVO</description></field>
+<field name="ORFAO" dataType="TEXTO" size="1" required="true"><description>ORFAO</description></field>
+<field name="VERSAO" dataType="TEXTO" size="64" required="true"><description>VERSAO</description></field>
+</fields></table></metadados>
